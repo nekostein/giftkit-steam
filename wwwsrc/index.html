@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GiftKit for Steam</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/lib/browser.min.js"></script> -->
+    <script>
+        const DEFAULTS = {
+            capsule_path: `https://steamcdn-a.akamaihd.net/steam/apps/2610000/capsule_616x353.jpg`
+        }
+    </script>
+    <style>
+        @import url('https://autowflibcdn.pages.dev/awfl-cdn/css/dm-sans.css');
+
+        .grand-cont {
+            font-size: 20px;
+            max-width: 800px;
+            padding: 30px;
+            margin: 0 auto;
+        }
+
+        .grand-cont>div {
+            padding: 30px 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grand-cont">
+        <div class="main-header">
+            <h1>GiftKit for Steam</h1>
+            <p>Steam key gift voucher generator</p>
+        </div>
+        <div class="main-content">
+            <style>
+                #js-mainCanvas {
+                    width: 100%;
+                    height: auto;
+                    box-shadow: rgba(0, 0, 0, 0.3) 0 1px 9px;
+                }
+
+                #js-mainPdfFrame {
+                    width: 100%;
+                    height: 50vh;
+                    background: #EEEEEE;
+                }
+
+                .main-form>div {
+                    padding: 10px 0;
+                }
+
+                .main-form aside {
+                    font-size: 12px;
+                }
+            </style>
+            <!-- <canvas id="js-mainCanvas" width="1059" height="353"></canvas> -->
+
+            <div class="main-form">
+                <h2>App Info</h2>
+                <div>
+                    <label for="">AppID or Steam store page URL</label>
+                    <div><input id="js-inputAppId" type="text" value="2610000"></div>
+                    <aside>Like either "2610000" or "https://[...].com/app/2610000"</aside>
+                </div>
+                <div>
+                    <label for="">Developer name</label>
+                    <div><input id="js-inputDevname" type="text" value=""></div>
+                </div>
+                <div>
+                    <label for="">GameTitle</label>
+                    <div><input id="js-inputGameTitle" type="text" value=""></div>
+                    <aside>Double comma (,,) is interpreted as linebreak.</aside>
+                </div>
+                <div>
+                    <label for="">Activation codes (one per line)</label>
+                    <div><textarea name="" id="js-inputCodes" cols="30" rows="10">MY-SAMPLE-CODE</textarea></div>
+                </div>
+            </div>
+            <div style="text-align: center; padding: 50px 0;">
+                <style>
+                    .button-large {
+                        font-size: 22px;
+                        padding: 4px 12px;
+                    }
+                </style>
+                <button class="button-large" onclick="renderTheCanvas_pdf()">Render PDF</button>
+                <button class="button-large" onclick="doc.save()">Save PDF</button>
+            </div>
+            <div>
+                <iframe id="js-mainPdfFrame" src="" frameborder="0"></iframe>
+            </div>
+            <div>
+                <h2>Features to be added?</h2>
+                <ul>
+                    <li>More layouts.</li>
+                    <li>More aspect ratios.</li>
+                    <li>Logo + hero combination in addition to main capsule.</li>
+                    <li>
+                        <a href="https://github.com/nekostein/giftkit-steam/issues">Suggest something else</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="main-footer">
+            <style>
+                .main-footer p {
+                    font-size: 12px;
+                    color: #777;
+                }
+            </style>
+            <p>Copyright © 2024 Nekostein, an unincorporated game development team consisting of Neruthes and MIAO_OAIM.</p>
+            <p>This portable webpage is a free software released with GNU GPL 2.0.</p>
+            <p>
+                <a href="https://github.com/nekostein/giftkit-steam">Source Code</a> /
+                <a href="https://nekostein.com">About Nekostein</a> /
+                <a href="https://nekostein.com/misc/donate">Donation</a>
+                
+            </p>
+        </div>
+    </div>
+    <script>
+
+    </script>
+    <script>
+        let doc;
+        const RAM = {
+            devname: 'Nekostein',
+            appid: '2610000',
+            title: 'KumaWelt 1:,,Honey Frontier',
+            codes: ['MY-SAMPLE-CODE', 'CODE-LIKE-THIS']
+        };
+
+        const resetFormData = function () {
+            document.querySelector('#js-inputDevname').value = RAM.devname;
+            document.querySelector('#js-inputAppId').value = RAM.appid;
+            document.querySelector('#js-inputCodes').value = RAM.codes.join('\n');
+            document.querySelector('#js-inputGameTitle').value = RAM.title;
+        };
+        const importDataFromForm = function () {
+            let appid_input = document.querySelector('#js-inputAppId').value;
+            let codes_input = document.querySelector('#js-inputCodes').value;
+            if (appid_input.match(/^\d+$/)) {
+                RAM.appid = appid_input;
+            } else if (appid_input.beginsWith('http')) {
+                RAM.appid = appid_input.slice(8).split('/')[2];
+            } else {
+                RAM.appid = 2610000;
+                console.error('Invalid AppID input.')
+            };
+            RAM.codes = codes_input.trim().split('\n');
+            RAM.title = document.querySelector('#js-inputGameTitle').value;
+            RAM.devname = document.querySelector('#js-inputDevname').value;
+        };
+        const renderTheCanvas_pdf = function () {
+            importDataFromForm()
+            const pdfFrame = document.querySelector('#js-mainPdfFrame');
+            doc = new jspdf.jsPDF({
+                orientation: "landscape",
+                unit: "mm",
+                format: [210, 70]
+            });
+            RAM.img = null;
+            RAM.img = new Image();
+            RAM.img.onload = function () {
+                RAM.codes.forEach(function (code, i) {
+                    if (i != 0) {
+                        doc.addPage();
+                    }
+                    renderTheCanvas_pdf_inner(code, doc);
+                })
+                pdfFrame.src = doc.output('datauristring');
+            };
+            RAM.img.src = DEFAULTS.capsule_path.replace('2610000', RAM.appid);
+        };
+        const renderTheCanvas_pdf_inner = function (code, doc) {
+            const leftMargin = 130;
+            const scale_ratio = 70 / 353;
+            doc.setFont('Helvetica', 'bold');
+            doc.addImage(RAM.img, "JPEG", 0, 0, 616 * scale_ratio, 353 * scale_ratio);
+            doc.setFontSize(18);
+            RAM.title.split(',,').forEach(function (subline, i) {
+                doc.text(subline, leftMargin, 14 + 8.5 * i);
+            });
+
+            doc.setFont('Helvetica', 'normal');
+            doc.setFontSize(13);
+            doc.text('Redeem game on Steam', leftMargin, 33);
+
+            doc.setFontSize(19);
+            doc.setFont('Courier', 'bold');
+            doc.text(code, leftMargin + 6.5, 50);
+
+            doc.setFont('Helvetica', 'normal');
+            doc.setFontSize(11);
+            doc.text(`Copyright © ${(new Date()).getUTCFullYear()} ${RAM.devname}.`, leftMargin, 64);
+
+            doc.setDrawColor(0, 0, 0);
+            doc.rect(leftMargin, 40, 70, 14, 'S');
+        };
+        window.addEventListener('load', function () {
+            resetFormData();
+            renderTheCanvas_pdf();
+        });
+    </script>
+</body>
+
+</html>
