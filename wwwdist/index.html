@@ -9,7 +9,7 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/lib/browser.min.js"></script> -->
     <script>
         const DEFAULTS = {
-            capsule_path: `https://steamcdn-a.akamaihd.net/steam/apps/2610000/capsule_616x353.jpg`
+            capsule_path: `https://steamcdn-a.akamaihd.net/steam/apps/3202800/capsule_616x353.jpg`
         }
     </script>
     <style>
@@ -62,8 +62,8 @@
                 <h2>App Info</h2>
                 <div>
                     <label for="">AppID or Steam store page URL</label>
-                    <div><input id="js-inputAppId" type="text" value="2610000"></div>
-                    <aside>Like either "2610000" or "https://[...].com/app/2610000"</aside>
+                    <div><input id="js-inputAppId" type="text" value="3202800"></div>
+                    <aside>Like either "3202800" or "https://[...].com/app/3202800"</aside>
                 </div>
                 <div>
                     <label for="">Developer name</label>
@@ -128,8 +128,8 @@
         let doc;
         const RAM = {
             devname: 'Nekostein',
-            appid: '2610000',
-            title: 'KumaWelt 1:,,Honey Frontier',
+            appid: '3202800',
+            title: 'Wellenfjord Danmaku,,Adventure',
             codes: ['MY-SAMPLE-CODE', 'CODE-LIKE-THIS']
         };
 
@@ -147,7 +147,7 @@
             } else if (appid_input.beginsWith('http')) {
                 RAM.appid = appid_input.slice(8).split('/')[2];
             } else {
-                RAM.appid = 2610000;
+                RAM.appid = 3202800;
                 console.error('Invalid AppID input.')
             };
             RAM.codes = codes_input.trim().split('\n');
@@ -173,7 +173,7 @@
                 })
                 pdfFrame.src = doc.output('datauristring');
             };
-            RAM.img.src = DEFAULTS.capsule_path.replace('2610000', RAM.appid);
+            RAM.img.src = DEFAULTS.capsule_path.replace('3202800', RAM.appid);
         };
         const renderTheCanvas_pdf_inner = function (code, doc) {
             const leftMargin = 130;

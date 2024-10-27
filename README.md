@@ -26,7 +26,7 @@ Published with GNU GPL 2.0.
 ## Extra Links
 
 - [About Nekostein](https://nekostein.com/)
-- [Our latest game on Steam](https://store.steampowered.com/app/2610000)
+- [Our latest game on Steam](https://store.steampowered.com/app/3202800)
 - [Donation](https://nekostein.com/misc/donate)
 
 
